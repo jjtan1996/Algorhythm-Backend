@@ -23,7 +23,7 @@ router.get(`/:id`, async (req, res) =>{
     .populate('user', 'name')
     .populate({ 
         path: 'orderItems', populate: {
-            path: 'product', populate: 'prod_category'}});
+            path: 'product', populate: 'category'}});
 
     if(!order){
         res.status(500).json({success: false})
@@ -48,8 +48,8 @@ router.post('/', async (req, res) => {
     const orderItemsIdsResolved = await orderItemsIds;
     
     const totalPrices = await Promise.all(orderItemsIdsResolved.map(async (orderItemId)=>{
-        const orderItem = await OrderItem.findById(orderItemId).populate('product', 'prod_price');
-        const totalPrice = orderItem.product.prod_price * orderItem.quantity;
+        const orderItem = await OrderItem.findById(orderItemId).populate('product', 'price');
+        const totalPrice = orderItem.product.price * orderItem.quantity;
 
         return totalPrice;
     }))
@@ -144,7 +144,7 @@ router.get(`/get/userorders/:userid`, async (req, res) =>{
     const userOrderList = await Order.find({user: req.params.userid})
     .populate({ 
         path: 'orderItems', populate: {
-            path: 'product', populate: 'prod_category'}})
+            path: 'product', populate: 'category'}})
             .sort({'dateOrdered': -1});
 
     if(!userOrderList){

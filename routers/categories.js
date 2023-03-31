@@ -26,10 +26,10 @@ router.put('/:id', async (req, res) => {
     const category = await Category.findByIdAndUpdate(
         req.params.id,
         {
-            cat_name: req.body.cat_name,
-            cat_color: req.body.cat_color,
-            cat_icon: req.body.cat_icon,
-            cat_image: req.body.cat_image,
+            name: req.body.name,
+            color: req.body.color,
+            icon: req.body.icon,
+            image: req.body.image,
         },
         {new: true} //return new update data
     )
@@ -44,10 +44,10 @@ router.put('/:id', async (req, res) => {
 //write
 router.post('/', async (req, res) => {
     let category = new Category({
-        cat_name: req.body.cat_name,
-        cat_color: req.body.cat_color,
-        cat_icon: req.body.cat_icon,
-        cat_image: req.body.cat_image,
+        name: req.body.name,
+        color: req.body.color,
+        icon: req.body.icon,
+        image: req.body.image,
     })
 
     category = await category.save();

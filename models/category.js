@@ -1,17 +1,17 @@
 const mongoose = require('mongoose');
 
 const categorySchema = mongoose.Schema({
-    cat_name: {
+    name: {
         type: String,
         required: true,
     },
-    cat_color: {
+    color: {
         type: String,
     },
-    cat_icon: {
+    icon: {
         type: String,
     },
-    cat_image: {
+    image: {
         type: String,
         default: "",
     },

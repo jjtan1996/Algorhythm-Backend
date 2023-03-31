@@ -1,60 +1,60 @@
 const mongoose = require('mongoose');
 
 const productSchema = mongoose.Schema({
-    prod_name: {
+    name: {
         type: String,
         required: true,
     },
-    prod_description: {
+    description: {
         type: String,
         required: true,
     },
-    prod_richDescription: {
+    richDescription: {
         type: String,
         default: '',
     },
-    prod_image: {
+    image: {
         type: String,
         default: '',
     },
-    prod_images: [{
+    images: [{
         type: String,
         default: '',
     }],
-    prod_brand: {
+    brand: {
         type: String,
         default: '',
     },
-    prod_price: {
+    price: {
         type: Number,
         default: 0,
     },
-    prod_category: {
+    category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
         required:true,
     },
-    prod_stockCount: {
+    countInStock: {
         type: Number,
         required: true,
         min: 0,
         max: 9999,
     },
-    prod_rating: {
+    rating: {
         type: Number,
         required: false,
         min: 0,
         max: 5,
     },
-    prod_reviewCount: {
+    numReviews: {
         type: Number,
         required: false,
     },
-    prod_featured: {
+    isFeatured: {
         type: Boolean,
         default: false,
     },
-    prod_dateCreated: {
+    dateCreated: {
         type: Date,
         default: Date.now,
     },

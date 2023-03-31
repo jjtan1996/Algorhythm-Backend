@@ -44,11 +44,11 @@ router.get(`/`, async (req, res) =>{
 
     let filter = {};
 
-    if (req.query.prod_category)
+    if (req.query.category)
     {
-        filter = {prod_category: req.query.prod_category.split(',')}
+        filter = {category: req.query.category.split(',')}
     }
-    const productList = await Product.find(filter).populate('prod_category');
+    const productList = await Product.find(filter).populate('category');
     if(!productList){
         res.status(500).json({success: false})
     }
@@ -57,7 +57,7 @@ router.get(`/`, async (req, res) =>{
 
 //get product by id
 router.get(`/:id`, async (req, res) =>{
-    const product = await Product.findById(req.params.id).populate('prod_category');
+    const product = await Product.findById(req.params.id).populate('category');
     if(!product){
         res.status(500).json({success: false})
     }
@@ -65,8 +65,8 @@ router.get(`/:id`, async (req, res) =>{
 });
 
 //create with single image upload
-router.post(`/`, uploadOptions.single('prod_image'), async (req, res) =>{
-    const category = await Category.findById(req.body.prod_category);
+router.post(`/`, uploadOptions.single('image'), async (req, res) =>{
+    const category = await Category.findById(req.body.category);
     if(!category) 
     {
         return res.status(400).send('Invalid Product');
@@ -76,22 +76,22 @@ router.post(`/`, uploadOptions.single('prod_image'), async (req, res) =>{
     if(!file) return res.status(400).send('No image in the request');
 
     const fileName = req.file.filename;
-    const basePath = `${req.protocol}://${req.get('host')}/public/upload/`;
+    const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
 
     let product = new Product({
-        prod_name: req.body.prod_name,
-        prod_description: req.body.prod_description,
-        prod_richDescription: req.body.prod_richDescription,
-        prod_image: `${basePath}${fileName}`,
-        prod_images: req.body.prod_images,
-        prod_brand: req.body.prod_brand,
-        prod_price: req.body.prod_price,
-        prod_category: req.body.prod_category,
-        prod_stockCount: req.body.prod_stockCount,
-        prod_rating: req.body.prod_rating,
-        prod_reviewCount: req.body.prod_reviewCount,
-        prod_featured: req.body.prod_featured,
-        prod_dateCreated: req.body.prod_dateCreated,
+        name: req.body.name,
+        description: req.body.description,
+        richDescription: req.body.richDescription,
+        image: `${basePath}${fileName}`,
+        images: req.body.images,
+        brand: req.body.brand,
+        price: req.body.price,
+        category: req.body.category,
+        countInStock: req.body.countInStock,
+        rating: req.body.rating,
+        reviewCount: req.body.reviewCount,
+        isFeatured: req.body.isFeatured,
+        dateCreated: req.body.dateCreated,
     })
 
     product = await product.save();
@@ -104,12 +104,12 @@ router.post(`/`, uploadOptions.single('prod_image'), async (req, res) =>{
 });
 
 //update
-router.put('/:id', uploadOptions.single('prod_image'), async (req, res) => {
+router.put('/:id', uploadOptions.single('image'), async (req, res) => {
     if(!mongoose.isValidObjectId(req.params.id)){
         res.status(400).send('Invalid Product ID');
     }
 
-    let category = await Category.findById(req.body.prod_category);
+    let category = await Category.findById(req.body.category);
     if(!category) 
     {
         return res.status(400).send('Invalid Category');
@@ -124,27 +124,28 @@ router.put('/:id', uploadOptions.single('prod_image'), async (req, res) => {
 
     if(file){
         const fileName = file.filename;
-        const basePath = `${req.protocol}://${req.get('host')}.public/uploads`
+        const basePath = `${req.protocol}://${req.get('host')}/public/uploads`
+        imagePath = `${basePath}${fileName}`;
     } else{
-        imagePath = product.prod_image;
+        imagePath = product.image;
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
         req.params.id,
         {
-            prod_name: req.body.prod_name,
-            prod_description: req.body.prod_description,
-            prod_richDescription: req.body.prod_richDescription,
-            prod_image: imagePath,
-            prod_images: req.body.prod_images,
-            prod_brand: req.body.prod_brand,
-            prod_price: req.body.prod_price,
-            prod_category: req.body.prod_category,
-            prod_stockCount: req.body.prod_stockCount,
-            prod_rating: req.body.prod_rating,
-            prod_reviewCount: req.body.prod_reviewCount,
-            prod_featured: req.body.prod_featured,
-            prod_dateCreated: req.body.prod_dateCreated,
+            name: req.body.name,
+            description: req.body.description,
+            richDescription: req.body.richDescription,
+            image: imagePath,
+            images: req.body.images,
+            brand: req.body.brand,
+            price: req.body.price,
+            category: req.body.category,
+            countInStock: req.body.countInStock,
+            rating: req.body.rating,
+            reviewCount: req.body.reviewCount,
+            isFeatured: req.body.isFeatured,
+            dateCreated: req.body.dateCreated,
         },
         {new: true} //return new update data
     )
@@ -182,21 +183,21 @@ router.get(`/get/count`, async (req, res) =>{
     });
 });
 
-//get featured products
-router.get(`/get/featured/:count`, async (req, res) =>{
+//get isFeatured products
+router.get(`/get/isFeatured/:count`, async (req, res) =>{
     const count = req.params.count ? req.params.count : 0
-    const productFeatured = await Product.find({prod_featured: true}).limit(+count)
+    const productisFeatured = await Product.find({isFeatured: true}).limit(+count)
 
-    if(!productFeatured){
+    if(!productisFeatured){
         res.status(500).json({success: false})
     }
 
-    res.send(productFeatured);
+    res.send(productisFeatured);
 });
 
 router.put(
     '/gallery-images/:id', 
-    uploadOptions.array('prod_images', 10), 
+    uploadOptions.array('images', 10), 
     async (req, res) => {
 
         if(!mongoose.isValidObjectId(req.params.id)){
@@ -205,7 +206,7 @@ router.put(
 
         const files = req.files;
         let imagesPaths = [];
-        const basePath = `${req.protocol}://${req.get('host')}/public/upload/`;
+        const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
 
         if(files){
             files.map(file=>{
@@ -216,7 +217,7 @@ router.put(
         let product = await Product.findByIdAndUpdate(
             req.params.id,
             {
-                prod_images: imagesPaths
+                images: imagesPaths
             },
             {new: true} //return new update data
         )
